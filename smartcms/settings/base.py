@@ -39,7 +39,7 @@ INSTALLED_APPS = [
     "wagtail",
 
     # new app
-    "checklist",
+    'checklist.apps.ChecklistConfig',
 
     "modelcluster",
     "taggit",

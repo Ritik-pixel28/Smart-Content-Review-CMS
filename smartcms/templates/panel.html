@@ -1,0 +1,16 @@
+<div class="checklist-panel">
+    <h3>Checklist</h3>
+
+    {% if instance.checklist_items.all %}
+    <ul>
+        {% for item in instance.checklist_items.all %}
+        <li>
+            <input type="checkbox" {% if item.is_done %}checked{% endif %} disabled>
+            {{ item.title }}
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p>No checklist items yet.</p>
+    {% endif %}
+</div>
