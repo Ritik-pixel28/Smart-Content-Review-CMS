@@ -1,2 +1,14 @@
 Django>=5.2,<5.3
 wagtail>=7.2,<7.3
+
+# Production server
+gunicorn>=21.2.0
+
+# PostgreSQL adapter
+psycopg2-binary>=2.9.9
+
+# Database URL parsing
+dj-database-url>=2.1.0
+
+# Whitenoise for static files
+whitenoise>=6.6.0
