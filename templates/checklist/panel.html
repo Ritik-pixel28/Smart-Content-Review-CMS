@@ -2,6 +2,21 @@
     <h3 style="margin-top: 0;">Checklist</h3>
 
     {% if instance.checklist_items.all %}
+    <!-- Progress Bar -->
+    <div style="margin-bottom: 15px;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
+            <span style="font-size: 0.9em; font-weight: 600; color: #333;">Progress</span>
+            <span id="checklist-progress-text" style="font-size: 0.9em; font-weight: 600; color: #666;">
+                0 / 0 (0%)
+            </span>
+        </div>
+        <div style="width: 100%; height: 8px; background: #e0e0e0; border-radius: 4px; overflow: hidden;">
+            <div id="checklist-progress-bar"
+                style="width: 0%; height: 100%; background: #dc3545; transition: width 0.3s ease, background 0.3s ease;">
+            </div>
+        </div>
+    </div>
+
     <ul style="list-style: none; padding: 0;">
         {% for item in instance.checklist_items.all %}
         <li
@@ -27,6 +42,48 @@
 <script>
     document.addEventListener('DOMContentLoaded', function () {
         const checkboxes = document.querySelectorAll('.checklist-checkbox');
+        const progressBar = document.getElementById('checklist-progress-bar');
+        const progressText = document.getElementById('checklist-progress-text');
+        const checklistPanel = document.querySelector('.checklist-panel');
+
+        // Function to update progress bar
+        function updateProgressBar() {
+            const total = checkboxes.length;
+            const completed = document.querySelectorAll('.checklist-checkbox:checked').length;
+            const percentage = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            if (progressBar && progressText) {
+                progressBar.style.width = percentage + '%';
+                progressText.textContent = `${completed} / ${total} (${percentage}%)`;
+
+                // Update colors based on percentage
+                if (percentage === 100) {
+                    progressBar.style.background = '#28a745'; // Green
+                    progressText.style.color = '#28a745';
+                } else if (percentage >= 50) {
+                    progressBar.style.background = '#ffc107'; // Yellow
+                    progressText.style.color = '#666';
+                } else {
+                    progressBar.style.background = '#dc3545'; // Red
+                    progressText.style.color = '#666';
+                }
+            }
+        }
+
+        // Initialize progress bar on load
+        updateProgressBar();
+
+        // Auto-scroll to checklist if incomplete items exist
+        const hasIncompleteItems = document.querySelectorAll('.checklist-checkbox:not(:checked)').length > 0;
+        if (hasIncompleteItems && checklistPanel) {
+            setTimeout(() => {
+                checklistPanel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                checklistPanel.style.boxShadow = '0 0 10px rgba(255, 193, 7, 0.5)';
+                setTimeout(() => {
+                    checklistPanel.style.boxShadow = 'none';
+                }, 2000);
+            }, 500);
+        }
 
         checkboxes.forEach(checkbox => {
             checkbox.addEventListener('change', function () {
@@ -48,6 +105,9 @@
                             // Update border color
                             const listItem = this.closest('li');
                             listItem.style.borderLeftColor = data.is_done ? '#28a745' : '#ffc107';
+
+                            // Update progress bar
+                            updateProgressBar();
                         } else {
                             console.error('Failed to update checklist item:', data.error);
                             // Revert checkbox state
