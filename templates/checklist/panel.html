@@ -1,8 +1,67 @@
-{% if panel_html %}
-{{ panel_html|safe }}
-{% else %}
-<div style="padding:10px;border:1px solid #ccc;margin-top:10px;">
-	<h3>Checklist (Demo)</h3>
-	<p>This panel will later show checklist items.</p>
+<div class="checklist-panel" style="padding: 15px; background: #f9f9f9; border-radius: 5px; margin-top: 10px;">
+    <h3 style="margin-top: 0;">Checklist</h3>
+
+    {% if instance.checklist_items.all %}
+    <ul style="list-style: none; padding: 0;">
+        {% for item in instance.checklist_items.all %}
+        <li
+            style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 3px; border-left: 3px solid {% if item.is_done %}#28a745{% else %}#ffc107{% endif %};">
+            <label style="display: flex; align-items: flex-start; cursor: pointer;">
+                <input type="checkbox" {% if item.is_done %}checked{% endif %} data-item-id="{{ item.id }}"
+                    class="checklist-checkbox" style="margin-right: 10px; margin-top: 3px; cursor: pointer;">
+                <div>
+                    <strong>{{ item.title }}</strong>
+                    {% if item.description %}
+                    <div style="color: #666; font-size: 0.9em; margin-top: 3px;">{{ item.description }}</div>
+                    {% endif %}
+                </div>
+            </label>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color: #666;">No checklist items yet. Add items via Admin → Checklist Items.</p>
+    {% endif %}
 </div>
-{% endif %}
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const checkboxes = document.querySelectorAll('.checklist-checkbox');
+
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('change', function () {
+                const itemId = this.getAttribute('data-item-id');
+                const isChecked = this.checked;
+
+                // Send AJAX request to toggle the item
+                fetch(`/checklist/toggle/${itemId}/`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]')?.value || ''
+                    }
+                })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            console.log('Checklist item updated:', data);
+                            // Update border color
+                            const listItem = this.closest('li');
+                            listItem.style.borderLeftColor = data.is_done ? '#28a745' : '#ffc107';
+                        } else {
+                            console.error('Failed to update checklist item:', data.error);
+                            // Revert checkbox state
+                            this.checked = !isChecked;
+                            alert('Failed to update checklist item. Please try again.');
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        // Revert checkbox state
+                        this.checked = !isChecked;
+                        alert('An error occurred. Please try again.');
+                    });
+            });
+        });
+    });
+</script>

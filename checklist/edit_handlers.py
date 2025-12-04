@@ -10,3 +10,8 @@ class ChecklistPanel(Panel):
     """
     class BoundPanel(Panel.BoundPanel):
         template_name = "checklist/panel.html"
+        
+        def get_context_data(self, parent_context=None):
+            context = super().get_context_data(parent_context)
+            context['instance'] = self.instance
+            return context
