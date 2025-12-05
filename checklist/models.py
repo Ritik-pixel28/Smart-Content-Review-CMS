@@ -8,6 +8,10 @@ class ChecklistItem(models.Model):
     description = models.TextField(blank=True, help_text="Optional description for this checklist item")
     is_done = models.BooleanField(default=False)
 
+    @property
+    def status_color(self):
+        return '#28a745' if self.is_done else '#ffc107'
+
     panels = [
         FieldPanel('page'),
         FieldPanel('title'),

@@ -35,14 +35,22 @@ class ChecklistSummaryPanel(Component):
         
         # Calculate progress percentage
         progress_percentage = 0
+        progress_color = '#dc3545'  # Default red
+        
         if total_pages > 0:
             progress_percentage = round((completed_pages / total_pages) * 100)
+            
+            if progress_percentage == 100:
+                progress_color = '#28a745'  # Green
+            elif progress_percentage >= 50:
+                progress_color = '#ffc107'  # Yellow
         
         context.update({
             'total_pages': total_pages,
             'completed_pages': completed_pages,
             'incomplete_pages': incomplete_pages,
             'progress_percentage': progress_percentage,
+            'progress_color': progress_color,
         })
         
         return context

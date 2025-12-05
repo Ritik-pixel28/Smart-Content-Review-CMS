@@ -20,7 +20,7 @@
     <ul style="list-style: none; padding: 0;">
         {% for item in instance.checklist_items.all %}
         <li
-            style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 3px; border-left: 3px solid {% if item.is_done %}#28a745{% else %}#ffc107{% endif %};">
+            style="margin-bottom: 12px; padding: 10px; background: white; border-radius: 3px; border-left: 3px solid {{ item.status_color }};">
             <label style="display: flex; align-items: flex-start; cursor: pointer;">
                 <input type="checkbox" {% if item.is_done %}checked{% endif %} data-item-id="{{ item.id }}"
                     class="checklist-checkbox" style="margin-right: 10px; margin-top: 3px; cursor: pointer;">
