@@ -11,6 +11,10 @@ SECRET_KEY = os.getenv('SECRET_KEY', 'change-me-in-production')
 # ALLOWED_HOSTS
 ALLOWED_HOSTS = os.getenv('ALLOWED_HOSTS', 'localhost').split(',')
 
+RENDER_EXTERNAL_HOSTNAME = os.environ.get('RENDER_EXTERNAL_HOSTNAME')
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+
 # Database - use DATABASE_URL environment variable
 DATABASES = {
     'default': dj_database_url.config(
